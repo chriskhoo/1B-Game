@@ -12,6 +12,8 @@ $(document).ready(function() {
     ctx: null,
     // define an object for the keystates
     keystate: {},
+    player1Score: 0,
+    player2Score: 0
   };
 
   // object with variables for player with optional up and down arrows
@@ -89,6 +91,7 @@ $(document).ready(function() {
     this.paddleIntersectionCheck();
     this.checkPlayer();
     this.paddleIntersection();
+    this.checkOut();
 
   },
 
@@ -136,14 +139,23 @@ $(document).ready(function() {
         // perpendicular bounce
         //  this.velocity.x *= -1;
 
-        // calculates relative position of ball on paddle's height
+        // calculates relative position of ball on paddle's height (value ranges from 0 to 1)
         var ballvsPaddleHeight = (this.y+this.height-this.paddle.y)/(this.paddle.height+this.height);
 
         /// gives 45 degree if ball hits the edges of the paddle and 90 degree if it hits the middle
         this.alpha = ( (2*ballvsPaddleHeight)-1 ) * gameVar.pi /4;
+
+        // calc speed from velocity vectors
         this.speed = Math.sqrt(this.velocity.x*this.velocity.x+this.velocity.y*this.velocity.y);
+
+        // increase the speed of the ball if it strikes the edges of the bar
+        if(ballvsPaddleHeight < 0.3 || ballvsPaddleHeight > 0.7){
+          this.speed *= 1.5;
+        }
+
+        // re-assign velocity vectors based on where the ball lands on the paddle
         this.velocity.y = this.speed*Math.sin(this.alpha);
-      //
+        // ball departs from paddle (no offset)
         if(this.velocity.x > 0){
         this.velocity.x = this.speed*Math.cos(this.alpha)*(-1);
         this.x = player2.x - this.width;
@@ -153,9 +165,41 @@ $(document).ready(function() {
         this.x += player1.x + player1.width;
         }
       }
+    },
+    checkOut: function(){
+      // ball restarts if it goes out of play
+      if (this.x + this.width < 0) {
+        this.serveBall1();
+      }
+      else if (this.x > gameVar.canvasWidth) {
+        this.serveBall2();
+      }
+    },
+
+    serveBall1: function(){
+      this.x = player1.x;
+      this.y = gameVar.canvasHeight*Math.random();
+      // keep angle between 45-135 degrees
+      this.beta = gameVar.pi/2*(2-Math.random())/2;
+      this.speed = 16;
+      // sin is +'ve from 0 to pi, cos is -'ve 1 to +'ve 1
+      this.velocity = {
+        x : this.speed*Math.sin(this.beta),
+        y : this.speed*Math.cos(this.beta)
+      };
+    },
+
+    serveBall2: function(){
+      this.x = player2.x - this.width;
+      this.y = gameVar.canvasHeight*Math.random();
+      this.beta = gameVar.pi/2*(2-Math.random())/2;
+      this.speed = 16;
+      this.velocity = {
+        x : this.speed*Math.sin(this.beta)*(-1),
+        y : this.speed*Math.cos(this.beta)
+      };
 
     }
-
 
   };
 
@@ -205,7 +249,6 @@ $(document).ready(function() {
       window.requestAnimationFrame(loop);
     };
     loop();
-    console.log(ball.velocity);
     // draw();
 
   }
@@ -220,13 +263,8 @@ $(document).ready(function() {
     player2.x = gameVar.canvasWidth-player1.width-player2.width;
     player2.y = (gameVar.canvasHeight-player2.height)/2;
 
-    ball.x = (gameVar.canvasWidth-ball.width)/2;
-    ball.y = (gameVar.canvasHeight-ball.height)/2;
-
-    ball.velocity = {
-      x : 10,
-      y : 0
-    };
+    // random serve
+    ball.serveBall1();
   }
 
   // update functions
