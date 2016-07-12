@@ -9,10 +9,12 @@
 body{
   text-align: center;
   line-height: 0.5em;
+  font-family: 'Rye', cursive;
 }
 
 h1{
   font-size: 3em;
+  font-family: 'Monoton', cursive;
 }
 
 .smallPrint{
@@ -43,18 +45,20 @@ main div div {
 }
 
 .scores{
-  font-size: 1.5em;
+  font-size: 2.5em;
   margin: 0;
 }
 
 button{
   margin: 1em auto;
   font-size: 0.9em;
+  font-family: 'Rye', cursive;
 }
 
 select{
   margin: 0.6em auto;
   font-size: 0.8em;
+  font-family: 'Rye', cursive;
 }
 
 canvas{
