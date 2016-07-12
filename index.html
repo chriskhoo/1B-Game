@@ -3,16 +3,51 @@
   <head>
     <meta charset="utf-8">
     <title>Pong!</title>
+    <link rel="stylesheet" href="./font-awesome-4.6.3/css/font-awesome.min.css" type="text/css">
     <link href="style.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <header>
-      <h1>A game of "Pong!"</h1>
-      <p>
-        A single player game written by Chris Khoo adapted from Max Wihlborg's instructional YouTube video
-      </p>
+      <h1>PONG 4 2</h1>
     </header>
-
+    <main>
+      <div class="playerContainer">
+        <h3>Player 1</h3>
+        <p class="scores" id="player1Score"></p>
+        <p class="instruction">
+          <i class="fa fa-arrow-circle-up" aria-hidden="true"></i> W
+          <i class="fa fa-arrow-circle-down" aria-hidden="true"></i> S
+          <i class="fa fa-hand-o-right" aria-hidden="true"></i> Q</p>
+      </div>
+      <div id="gameControls">
+        <h3>Serve Speed<br>
+          <select class="form-control" id="serveSpeed">
+            <option value="12">Medium</option>
+            <option value="25">Manic</option>
+            <option value="18">Quick</option>
+            <option value="5">Slow</option>
+          </select>
+        </h3>
+        <div>
+          <div id="soundOn"><i class="fa fa-volume-up" aria-hidden="true"></i></div>
+          <div id="soundOff"><i class="fa fa-volume-off" aria-hidden="true"></i></div>
+        </div>
+        <button id="pauseButton">Pause</button>
+      </div>
+      <div class="playerContainer">
+        <h3>Player 2</h3>
+        <p class="scores" id="player2Score"></p>
+        <p class="instruction">
+          <i class="fa fa-arrow-circle-up" aria-hidden="true"></i> O
+          <i class="fa fa-arrow-circle-down" aria-hidden="true"></i> L
+          <i class="fa fa-hand-o-left" aria-hidden="true"></i> P</p>
+      </div>
+    </main>
+    <section id = "game">
+    </section>
+    <footer class="smallPrint">
+      Credit: Adapted from Max Wihlborg's YouTube video
+    </footer>
     <script  src="jquery.min.js" charset="utf-8"> </script>
     <script  type="text/javascript" src="main.js"></script>
   </body>

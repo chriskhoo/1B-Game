@@ -6,13 +6,61 @@
 *, *:before, *:after {
   box-sizing: inherit;
 }*/
+body{
+  text-align: center;
+  line-height: 0.5em;
+}
 
-/*canvas{
+h1{
+  font-size: 3em;
+}
+
+.smallPrint{
+  font-size: 0.7em;
+}
+
+main {
+  display:flex;
+  /*border: 3px black solid;*/
+  justify-content: space-around;
+  margin: auto;
+}
+
+main div{
+  display:flex;
+  /*border: 3px black solid;*/
+  flex-direction: column;
+  padding: 0;
+  align-content: space-around;
+  justify-content: center;
+}
+
+main div div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  font-size: 1.3em;
+}
+
+.scores{
+  font-size: 1.5em;
+  margin: 0;
+}
+
+button{
+  margin: 1em auto;
+  font-size: 0.9em;
+}
+
+select{
+  margin: 0.6em auto;
+  font-size: 0.8em;
+}
+
+canvas{
   position: relative;
-  margin: 0 auto;
-}*/
-
-
+  margin: 1em auto;
+}
 
 /*ipad landscape */
 /*@media only screen and (max-width: 960px) {

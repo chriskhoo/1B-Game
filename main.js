@@ -13,7 +13,8 @@ $(document).ready(function() {
     // define an object for the keystates
     keystate: {},
     player1Score: 0,
-    player2Score: 0
+    player2Score: 0,
+    playerService: 0
   };
 
   // object with variables for player with optional up and down arrows
@@ -23,9 +24,10 @@ $(document).ready(function() {
     y: null,
     width: 20,
     height: 100,
-    // define player 1 keystates
+    // define player 1 keystates for w & s & q
     upKey : 87,
     downKey : 83,
+    serveKey : 81,
     // optional name
     // optional keystrokes
     draw: function(){
@@ -36,8 +38,8 @@ $(document).ready(function() {
     update: function(){
       // function to move player paddle
     //  console.log("update player1");
-    if(gameVar.keystate[this.upKey]) this.y -= 7;
-    if(gameVar.keystate[this.downKey]) this.y += 7;
+    if(gameVar.keystate[this.upKey]) {this.y -= 7;}
+    if(gameVar.keystate[this.downKey]) {this.y += 7;}
     // limit movement to the edges of the screen
     this.y = Math.max(Math.min(this.y, gameVar.canvasHeight - this.height),0);
     }
@@ -49,9 +51,10 @@ $(document).ready(function() {
     y: null,
     width: 20,
     height: 100,
-    // define player 2 keystates
-    upKey : 38,
-    downKey : 40,
+    // define player 2 keystates for o & l & p
+    upKey : 79,
+    downKey : 76,
+    serveKey : 80,
 
     draw: function(){
       //  console.log("draw player2");
@@ -59,8 +62,8 @@ $(document).ready(function() {
       },
     update: function(){
     //  console.log("update player2");
-    if(gameVar.keystate[this.upKey]) this.y -= 7;
-    if(gameVar.keystate[this.downKey]) this.y += 7;
+    if(gameVar.keystate[this.upKey]) {this.y -= 7;}
+    if(gameVar.keystate[this.downKey]) {this.y += 7;}
     // limit movement to the edges of the screen
     this.y = Math.max(Math.min(this.y, gameVar.canvasHeight - this.height),0);
     }
@@ -77,6 +80,7 @@ $(document).ready(function() {
     velocity: 0,
     alpha: gameVar.pi * 0.2,
     paddle: 0,
+    serveSpeed: 10,
 
     // function to draw the player's paddle
     draw: function(){
@@ -96,6 +100,7 @@ $(document).ready(function() {
     this.checkPlayer();
     this.paddleIntersection();
     this.checkOut();
+    this.hitServe();
 
   },
 
@@ -173,38 +178,72 @@ $(document).ready(function() {
     checkOut: function(){
       // ball restarts if it goes out of play
       if (this.x + this.width < 0) {
+        gameVar.playerService = 1;
         gameVar.player2Score++;
-        this.serveBall1();
+        // keep ball out of screen and out of count score condition
+        this.x = -this.width;
+        this.velocity.x = 0;
+
       }
       else if (this.x > gameVar.canvasWidth) {
+        gameVar.playerService = 2;
         gameVar.player1Score++;
+        this.x = gameVar.canvasWidth;
+        this.velocity.x = 0;
+
+      }
+    },
+
+    hitServe: function(){
+      if (gameVar.playerService == 1){
+
+        if(gameVar.keystate[player1.serveKey]) {
+        this.serveBall1();
+        gameVar.playerService = 0;
+        }
+      }
+      else if (gameVar.playerService == 2) {
+        if(gameVar.keystate[player2.serveKey]) {
         this.serveBall2();
+        gameVar.playerService = 0;
+        }
+      }
+    },
+
+    drawInstructions: function(){
+      if (gameVar.playerService == 1){
+        gameVar.ctx.fillText("Player 1: Press Q to serve", gameVar.canvasWidth/2, gameVar.canvasHeight/2);
+      }
+      else if (gameVar.playerService == 2) {
+        gameVar.ctx.fillText("Player 2: Press P to serve", gameVar.canvasWidth/2, gameVar.canvasHeight/2);
       }
     },
 
     serveBall1: function(){
-      this.x = player1.x;
-      this.y = gameVar.canvasHeight*Math.random();
-      // keep angle between 45-135 degrees
-      this.beta = gameVar.pi/2*(2-Math.random())/2;
-      this.speed = 12;
-      // sin is +'ve from 0 to pi, cos is -'ve 1 to +'ve 1
-      this.velocity = {
-        x : this.speed*Math.sin(this.beta),
-        y : this.speed*Math.cos(this.beta)
-      };
+      // if(gameVar.keystate[player1.serveKey]) {
+        this.serveSpeed = $("#serveSpeed").val();
+        this.x = player1.x+player1.width;
+        this.y = player1.y+player1.height/2;
+        // keep angle between 45-135 degrees
+        this.beta = gameVar.pi/2*(2-Math.random())/2;
+        this.speed = this.serveSpeed;
+        // sin is +'ve from 0 to pi, cos is -'ve 1 to +'ve 1
+        this.velocity = {
+          x : this.speed*Math.sin(this.beta),
+          y : this.speed*Math.cos(this.beta)
+        };
     },
 
     serveBall2: function(){
-      this.x = player2.x - this.width;
-      this.y = gameVar.canvasHeight*Math.random();
-      this.beta = gameVar.pi/2*(2-Math.random())/2;
-      this.speed = 12;
-      this.velocity = {
-        x : this.speed*Math.sin(this.beta)*(-1),
-        y : this.speed*Math.cos(this.beta)
-      };
-
+        this.serveSpeed = $("#serveSpeed").val();
+        this.x = player2.x - this.width;
+        this.y = player2.y+player2.height/2;
+        this.beta = gameVar.pi/2*(2-Math.random())/2;
+        this.speed = this.serveSpeed;
+        this.velocity = {
+          x : this.speed*Math.sin(this.beta)*(-1),
+          y : this.speed*Math.cos(this.beta)
+        };
     }
 
   };
@@ -221,9 +260,10 @@ $(document).ready(function() {
       while(this.y<gameVar.canvasHeight){
       gameVar.ctx.fillRect(this.x, this.y, this.w, this.step/2);
       this.y += this.step;
-    }
+      }
     this.y =0;
     }
+
   };
 
 
@@ -233,7 +273,7 @@ $(document).ready(function() {
     gameVar.canvas.width = gameVar.canvasWidth;
     gameVar.canvas.height = gameVar.canvasHeight;
     gameVar.ctx = gameVar.canvas.getContext("2d");
-    document.body.appendChild(gameVar.canvas);
+    document.getElementById('game').appendChild(gameVar.canvas);
 
     // activate keystate listeners
     document.addEventListener("keydown", function(evt){
@@ -245,20 +285,42 @@ $(document).ready(function() {
       }
     );
 
+
+    // define pause and unpause functions;
+    var pause = function(){
+      this.id = "unpauseButton";
+      this.innerHTML = "Unpause";
+      this.addEventListener("click", unPause);
+      this.removeEventListener("click", pause);
+      console.log('pause');
+      window.cancelAnimationFrame(pauseId);
+    };
+    var unPause = function(){
+      this.id = "pauseButton";
+      this.innerHTML = "Pause";
+      this.addEventListener("click", pause);
+      this.removeEventListener("click", unPause);
+      console.log('unpause');
+      pauseId = window.requestAnimationFrame(loop);
+    };
+
+    // activate pause buttons
+    document.getElementById("pauseButton").addEventListener("click", pause);
+
     //initialize game
     gameInit();
-
+    var pauseId;
     // run the game & continuously update the visuals
     var loop = function (){
       update();
       draw();
-      window.requestAnimationFrame(loop);
+      pauseId = window.requestAnimationFrame(loop);
     };
-    loop();
-    // draw();
+    pauseId = window.requestAnimationFrame(loop);
+
+
 
   }
-
 
   function gameInit(){
     console.log('game initailized');
@@ -270,7 +332,12 @@ $(document).ready(function() {
     player2.y = (gameVar.canvasHeight-player2.height)/2;
 
     // random serve
-    ball.serveBall1();
+    gameVar.playerService= 1;
+  }
+
+  function scoreUpdate(){
+    $("#player1Score").html(gameVar.player1Score);
+    $("#player2Score").html(gameVar.player2Score);
   }
 
   // update functions
@@ -278,8 +345,9 @@ $(document).ready(function() {
     ball.update();
     player1.update();
     player2.update();
+    scoreUpdate();
+    // console.log($("#serveSpeed").val());
   }
-
 
   function draw(){
   //  console.log('draw box');
@@ -292,8 +360,12 @@ $(document).ready(function() {
     ball.draw();
     player1.draw();
     player2.draw();
-
     net.draw();
+
+    gameVar.ctx.font = "30px Helvetica";
+    gameVar.ctx.textAlign = "center";
+    gameVar.ctx.textBaseline = "center";
+    ball.drawInstructions();
     }
 
   // launch game
