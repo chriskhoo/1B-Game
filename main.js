@@ -38,6 +38,8 @@ $(document).ready(function() {
     //  console.log("update player1");
     if(gameVar.keystate[this.upKey]) this.y -= 7;
     if(gameVar.keystate[this.downKey]) this.y += 7;
+    // limit movement to the edges of the screen
+    this.y = Math.max(Math.min(this.y, gameVar.canvasHeight - this.height),0);
     }
   };
 
@@ -59,6 +61,8 @@ $(document).ready(function() {
     //  console.log("update player2");
     if(gameVar.keystate[this.upKey]) this.y -= 7;
     if(gameVar.keystate[this.downKey]) this.y += 7;
+    // limit movement to the edges of the screen
+    this.y = Math.max(Math.min(this.y, gameVar.canvasHeight - this.height),0);
     }
   };
 
@@ -150,7 +154,7 @@ $(document).ready(function() {
 
         // increase the speed of the ball if it strikes the edges of the bar
         if(ballvsPaddleHeight < 0.3 || ballvsPaddleHeight > 0.7){
-          this.speed *= 1.5;
+          this.speed *= 1.3;
         }
 
         // re-assign velocity vectors based on where the ball lands on the paddle
@@ -169,9 +173,11 @@ $(document).ready(function() {
     checkOut: function(){
       // ball restarts if it goes out of play
       if (this.x + this.width < 0) {
+        gameVar.player2Score++;
         this.serveBall1();
       }
       else if (this.x > gameVar.canvasWidth) {
+        gameVar.player1Score++;
         this.serveBall2();
       }
     },
@@ -181,7 +187,7 @@ $(document).ready(function() {
       this.y = gameVar.canvasHeight*Math.random();
       // keep angle between 45-135 degrees
       this.beta = gameVar.pi/2*(2-Math.random())/2;
-      this.speed = 16;
+      this.speed = 12;
       // sin is +'ve from 0 to pi, cos is -'ve 1 to +'ve 1
       this.velocity = {
         x : this.speed*Math.sin(this.beta),
@@ -193,7 +199,7 @@ $(document).ready(function() {
       this.x = player2.x - this.width;
       this.y = gameVar.canvasHeight*Math.random();
       this.beta = gameVar.pi/2*(2-Math.random())/2;
-      this.speed = 16;
+      this.speed = 12;
       this.velocity = {
         x : this.speed*Math.sin(this.beta)*(-1),
         y : this.speed*Math.cos(this.beta)
